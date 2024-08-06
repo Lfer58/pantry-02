@@ -57,6 +57,7 @@ export default function Home() {
     } else {
       await setDoc(docRef, { quantity: 1 })
     }
+    print(1)
     await updateInventory()
   }
   
@@ -122,6 +123,41 @@ export default function Home() {
       <Button variant="contained" onClick={handleOpen}>
         Add New Item
       </Button>
+      {/* <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Remove Item
+          </Typography>
+          <Stack width="100%" direction={'row'} spacing={2}>
+            <TextField
+              id="outlined-basic"
+              label="Item"
+              variant="outlined"
+              fullWidth
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+            />
+            <Button
+              variant="outlined"
+              onClick={() => {
+                removeItem(itemName)
+                setItemName('')
+                handleClose()
+              }}
+            >
+              Remove
+            </Button>
+          </Stack>
+        </Box>
+      </Modal> */}
+      {/* <Button variant="contained" onClick={handleOpen}>
+        Remove Item
+      </Button> */}
       <Box border={'1px solid #333'}>
         <Box
           width="800px"
