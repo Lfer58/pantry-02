@@ -57,7 +57,6 @@ export default function Home() {
     } else {
       await setDoc(docRef, { quantity: 1 })
     }
-    print(1)
     await updateInventory()
   }
   
@@ -176,7 +175,7 @@ export default function Home() {
             <Box
               key={name}
               width="100%"
-              minHeight="150px"
+              minHeight="75px"
               display={'flex'}
               justifyContent={'space-between'}
               alignItems={'center'}
