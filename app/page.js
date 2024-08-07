@@ -31,8 +31,8 @@ const style = {
 export default function Home() {
   // We'll add our component logic here
   const [inventory, setInventory] = useState([])
-  const [open, setOpen] = useState(false)
   const [itemName, setItemName] = useState('')
+  const [searchItem, searchItemName] = useState('')
 
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, 'inventory'))
@@ -40,6 +40,18 @@ export default function Home() {
     const inventoryList = []
     docs.forEach((doc) => {
       inventoryList.push({ name: doc.id, ...doc.data() })
+    })
+    setInventory(inventoryList)
+  }
+
+  const searchInventroy = async () => {
+    const snapshot = query(collection(firestore, 'inventory'))
+    const docs = await getDocs(snapshot)
+    const inventoryList = []
+    docs.forEach((doc) => {
+      if (doc.id.toLowerCase().includes(searchItem.toLowerCase())) {
+        inventoryList.push({ name: doc.id, ...doc.data() })
+      }
     })
     setInventory(inventoryList)
   }
@@ -82,86 +94,125 @@ export default function Home() {
       width="100vw"
       height="100vh"
       display={'flex'}
-      justifyContent={'center'}
-      flexDirection={'column'}
+      justifyContent={'flex-start'}
+      flexDirection={'row'}
       alignItems={'center'}
-      gap={2}
+      gap={30}
+      bgcolor={'#3b3b3b'}
+      paddingX={5}
     >
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+      <Box 
+      display={'flex'}
+      flexDirection={'column'}
+      gap={10}
       >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Add Item
-          </Typography>
-          <Stack width="100%" direction={'row'} spacing={2}>
-            <TextField
-              id="outlined-basic"
-              label="Item"
-              variant="outlined"
-              fullWidth
-              value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
-            />
-            <Button
-              variant="outlined"
-              onClick={() => {
-                addItem(itemName)
-                setItemName('')
-                handleClose()
-              }}
-            >
-              Add
-            </Button>
-          </Stack>
-        </Box>
-      </Modal>
-      <Button variant="contained" onClick={handleOpen}>
-        Add New Item
-      </Button>
-      {/* <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Remove Item
-          </Typography>
-          <Stack width="100%" direction={'row'} spacing={2}>
-            <TextField
-              id="outlined-basic"
-              label="Item"
-              variant="outlined"
-              fullWidth
-              value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
-            />
-            <Button
-              variant="outlined"
-              onClick={() => {
-                removeItem(itemName)
-                setItemName('')
-                handleClose()
-              }}
-            >
-              Remove
-            </Button>
-          </Stack>
-        </Box>
-      </Modal> */}
-      {/* <Button variant="contained" onClick={handleOpen}>
-        Remove Item
-      </Button> */}
-      <Box border={'1px solid #333'}>
         <Box
-          width="800px"
+          display={'flex'}
+          flexDirection={'column'}
+          gap={2.5}
+        >
+          <TextField
+            id="outlined-basic"
+            label="Item"
+            variant="outlined"
+            fullWidth
+            value={itemName}
+            onChange={(e) => setItemName(e.target.value)}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: '#D0D9CD', // Default background color
+                '&:hover': {
+                  backgroundColor: '#e0e0e0', // Background color on hover
+                },
+                '&.Mui-focused': {
+                  backgroundColor: '#ffffff', // Background color when focused
+                },
+              },
+            }}
+          />
+          <Button variant="contained"
+            onClick={() => {
+              if (itemName) {
+                addItem(itemName)
+              }
+              setItemName('')
+            }}
+            sx={{
+              backgroundColor: '#7A8072', // Set background color
+              color: '#ffffff', // Set text color
+              '&:hover': {
+                backgroundColor: '#388e3c', // Set background color on hover
+              },
+            }}
+          >
+            Add New Item
+          </Button>
+        </Box>
+        <Box
+          display={'flex'}
+          flexDirection={'column'}
+          gap={2.5}
+        >
+          <TextField
+            id="outlined-basic"
+            label="Item"
+            variant="outlined"
+            fullWidth
+            value={searchItem}
+            onChange={(e) => searchItemName(e.target.value)}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                backgroundColor: '#D0D9CD', // Default background color
+                '&:hover': {
+                  backgroundColor: '#e0e0e0', // Background color on hover
+                },
+                '&.Mui-focused': {
+                  backgroundColor: '#ffffff', // Background color when focused
+                },
+              },
+            }}
+          />
+          <Button variant="contained"
+            onClick={() => {
+              searchInventroy(itemName)
+              searchItemName('')
+            }}
+            sx={{
+              backgroundColor: '#7A8072', // Set background color
+              color: '#ffffff', // Set text color
+              '&:hover': {
+                backgroundColor: '#388e3c', // Set background color on hover
+              },
+            }}
+          >
+            Search
+          </Button>
+          <Button variant="contained"
+            onClick={() => {
+              updateInventory()
+              searchItemName('')
+            }}
+            sx={{
+              backgroundColor: '#7A8072', // Set background color
+              color: '#ffffff', // Set text color
+              '&:hover': {
+                backgroundColor: '#388e3c', // Set background color on hover
+              },
+            }}
+          >
+            Home
+          </Button>
+        </Box>
+      </Box>
+      <Box 
+      border={'1px solid #333'}
+      bgcolor={'#D0D9CD'}
+      sx={{ borderRadius: '20px' }}
+      >
+        <Box
+          width="1200px"
           height="100px"
-          bgcolor={'#ADD8E6'}
+          bgcolor={'#7A8072'}
           display={'flex'}
           justifyContent={'center'}
           alignItems={'center'}
@@ -170,25 +221,35 @@ export default function Home() {
             Inventory Items
           </Typography>
         </Box>
-        <Stack width="800px" height="300px" spacing={2} overflow={'auto'}>
+        <Stack width="1200px" height="750px" spacing={2} overflow={'auto'} alignItems={'center'}>
           {inventory.map(({name, quantity}) => (
             <Box
               key={name}
-              width="100%"
+              width="95%"
               minHeight="75px"
               display={'flex'}
               justifyContent={'space-between'}
               alignItems={'center'}
-              bgcolor={'#f0f0f0'}
-              paddingX={5}
+              bgcolor={'#f0f1f0'}
+              sx={{ borderRadius: '8px' }}
             >
               <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
-                {name.charAt(0).toUpperCase() + name.slice(1)}
+              {name.length > 5
+                ? name.charAt(0).toUpperCase() + name.slice(1,5) + "..."
+                : name.charAt(0).toUpperCase() + name.slice(1).padEnd(7, ".")}
               </Typography>
               <Typography variant={'h3'} color={'#333'} textAlign={'center'}>
                 Quantity: {quantity}
               </Typography>
-              <Button variant="contained" onClick={() => removeItem(name)}>
+              <Button variant="contained" onClick={() => removeItem(name)}
+                sx={{
+                  backgroundColor: '#e32636', // Set background color
+                  color: '#ffffff', // Set text color
+                  '&:hover': {
+                    backgroundColor: '#8b0000', // Set background color on hover
+                  },
+                }}
+              >
                 Remove
               </Button>
             </Box>
